@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VVPR-bis Dividend Calculator</title>
+
+  <style>
+    :root{
+      --bg0:#05060a;
+      --bg1:#0b1020;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --muted2: rgba(255,255,255,.55);
+
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --shadow2: 0 12px 40px rgba(0,0,0,.35);
+
+      --r: 18px;
+
+      --ok: #4ade80;
+      --warn: #fb7185;
+
+      --ring: rgba(56,189,248,.40);
+      --ring2: rgba(168,85,247,.32);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1100px 700px at 12% 10%, rgba(56,189,248,.22), transparent 60%),
+        radial-gradient(900px 650px at 88% 18%, rgba(168,85,247,.20), transparent 55%),
+        radial-gradient(700px 520px at 45% 95%, rgba(34,197,94,.16), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:-40%;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      opacity:.06;
+      transform: rotate(7deg);
+      pointer-events:none;
+      mix-blend-mode: overlay;
+    }
+
+    .wrap{ max-width: 1060px; margin: 0 auto; padding: 22px 18px 40px; }
+
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-top: 10px;
+      margin-bottom: 18px;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; min-width: 0; }
+    .logo{
+      width:44px; height:44px; border-radius: 14px;
+      background:
+        radial-gradient(14px 14px at 25% 25%, rgba(255,255,255,.55), transparent 60%),
+        linear-gradient(135deg, rgba(56,189,248,.9), rgba(168,85,247,.85));
+      box-shadow: 0 10px 30px rgba(56,189,248,.22), 0 10px 30px rgba(168,85,247,.16);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    h1{ font-size: 1.15rem; line-height: 1.15; margin:0; letter-spacing: -0.02em; }
+    .sub{ margin-top: 4px; color: var(--muted); font-size: 0.95rem; }
+
+    .pill{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: var(--muted);
+      font-size:.92rem;
+      white-space: nowrap;
+    }
+    .pill b{ color: var(--text); font-weight: 650; }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap: 14px; }
+    @media (min-width: 900px){ .grid{ grid-template-columns: 1.12fr .88fr; gap: 16px; } }
+
+    .card{
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow:hidden;
+      position:relative;
+    }
+    .card::after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
+                  radial-gradient(700px 260px at 10% 0%, rgba(56,189,248,.12), transparent 60%),
+                  radial-gradient(700px 260px at 90% 0%, rgba(168,85,247,.10), transparent 60%);
+      pointer-events:none;
+      opacity:.85;
+    }
+    .card > *{ position:relative; z-index:1; }
+
+    .cardHead{
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .cardTitle{ margin:0; font-size: 1rem; letter-spacing:-0.015em; }
+    .cardMeta{ color: var(--muted2); font-size:.88rem; text-align:right; }
+    .content{ padding: 16px 18px 18px; }
+
+    .controls{ display:grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 560px){ .controls{ grid-template-columns: 1fr 1fr; } }
+
+    .field{ display:flex; flex-direction:column; gap:8px; }
+    .labelRow{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+    label{ font-size: .92rem; font-weight: 650; letter-spacing: -0.01em; color: rgba(255,255,255,.90); }
+    .mini{ font-size:.82rem; color: var(--muted2); }
+
+    input, button { font: inherit; color: var(--text); outline: none; }
+
+    .inputWrap{ position:relative; }
+    .prefix{
+      position:absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-weight: 700;
+      color: rgba(255,255,255,.60);
+      pointer-events:none;
+      font-variant-numeric: tabular-nums;
+    }
+    .control{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      padding: 12px 12px 12px 36px;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease;
+      font-variant-numeric: tabular-nums;
+    }
+    .control:focus{
+      border-color: rgba(56,189,248,.55);
+      box-shadow: 0 0 0 6px var(--ring), 0 0 0 12px rgba(168,85,247,.10);
+    }
+    .control:hover{ border-color: rgba(255,255,255,.22); }
+
+    .hint{ color: var(--muted2); font-size: .86rem; line-height: 1.25; }
+
+    /* ---------- SaaS segmented control (rate picker) ---------- */
+    .segWrap{
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      padding: 6px;
+      display:flex;
+      gap:6px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      overflow:hidden;
+    }
+    .segBtn{
+      appearance:none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: rgba(255,255,255,.82);
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      flex: 1 1 0;
+      min-width: 0;
+      text-align:center;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      transition: transform .12s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+      font-variant-numeric: tabular-nums;
+      user-select:none;
+      white-space: nowrap;
+    }
+    .segBtn small{
+      font-weight: 650;
+      color: rgba(255,255,255,.65);
+    }
+    .segBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
+    .segBtn:active{ transform: translateY(0px); }
+
+    .segBtn[aria-pressed="true"]{
+      background:
+        radial-gradient(500px 140px at 25% 20%, rgba(255,255,255,.20), transparent 55%),
+        linear-gradient(135deg, rgba(56,189,248,.75), rgba(168,85,247,.70));
+      border-color: rgba(255,255,255,.16);
+      color: rgba(255,255,255,.96);
+      box-shadow: 0 14px 40px rgba(56,189,248,.14), 0 14px 40px rgba(168,85,247,.12);
+    }
+    .segBtn:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 6px var(--ring), 0 0 0 12px rgba(168,85,247,.10);
+    }
+    /* Wrap to 2 rows on small screens if needed */
+    @media (max-width: 420px){
+      .segWrap{ flex-wrap: wrap; border-radius: 18px; }
+      .segBtn{ flex: 1 1 calc(50% - 6px); }
+    }
+
+    .resultBox{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      padding: 14px 14px;
+    }
+    .rows{ display:grid; gap:10px; margin-top: 8px; }
+    .rrow{ display:flex; justify-content:space-between; gap:10px; align-items:baseline; }
+    .rrow .k{ color: var(--muted); font-size:.92rem; }
+    .rrow .v{ font-weight: 760; letter-spacing:-0.01em; font-variant-numeric: tabular-nums; }
+
+    .status{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      font-size: .92rem;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius: 999px;
+      background: rgba(255,255,255,.35);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
+      flex: 0 0 auto;
+    }
+    .status.ok{ color: rgba(74,222,128,.95); border-color: rgba(74,222,128,.18); }
+    .status.ok .dot{ background: rgba(74,222,128,.9); box-shadow: 0 0 0 4px rgba(74,222,128,.10); }
+    .status.bad{ color: rgba(251,113,133,.95); border-color: rgba(251,113,133,.18); }
+    .status.bad .dot{ background: rgba(251,113,133,.9); box-shadow: 0 0 0 4px rgba(251,113,133,.12); }
+
+    .btnRow{ display:flex; flex-wrap:wrap; gap:10px; margin-top: 12px; }
+    .btn{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      padding: 11px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .18s ease, border-color .18s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); }
+    .btn:active{ transform: translateY(0px); }
+    .btnPrimary{
+      border-color: rgba(56,189,248,.22);
+      background:
+        radial-gradient(600px 140px at 20% 20%, rgba(255,255,255,.20), transparent 50%),
+        linear-gradient(135deg, rgba(56,189,248,.75), rgba(168,85,247,.70));
+      box-shadow: 0 18px 50px rgba(56,189,248,.18), 0 18px 50px rgba(168,85,247,.14);
+      font-weight: 750;
+    }
+
+    .foot{ margin-top: 14px; color: var(--muted2); font-size: .88rem; line-height: 1.25; }
+    kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .85em;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.22);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div style="min-width:0">
+          <h1>VVPR-bis Dividend Calculator</h1>
+          <div class="sub">Enter <b>one</b> value (Gross, Tax, or Net) → we compute the rest.</div>
+        </div>
+      </div>
+
+      <div class="pill" title="How it works">
+        <span>Mode:</span>
+        <b id="modePill">Ready</b>
+      </div>
+    </div>
+
+
+
+    <div class="grid">
+      <section class="card" aria-label="Inputs">
+        <div class="cardHead">
+          <h2 class="cardTitle">Inputs</h2>
+          <div class="cardMeta">Belgium • VVPR-bis / RV</div>
+        </div>
+
+        <div class="content">
+          <div class="controls">
+
+            <!-- ✅ Replaces dropdown with segmented control -->
+            <div class="field" style="grid-column: 1 / -1;">
+              <div class="labelRow">
+                <label>Withholding rate</label>
+                <span class="mini">Tap</span>
+              </div>
+              <div class="segWrap" role="group" aria-label="Withholding rate">
+                <button class="segBtn" type="button" data-rate="0.15" aria-pressed="false">15%</button>
+                <button class="segBtn" type="button" data-rate="0.18" aria-pressed="false">18%</button>
+                <button class="segBtn" type="button" data-rate="0.20" aria-pressed="false">20%</button>
+                <button class="segBtn" type="button" data-rate="0.30" aria-pressed="true">30%</button>
+              </div>
+              <div class="hint">Tax = Gross × rate</div>
+              <!-- hidden input still used by JS logic -->
+              <input type="hidden" id="rate" value="0.30" />
+            </div>
+
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <div class="labelRow">
+                <label for="gross">Gross dividend</label>
+                <span class="mini">Before tax</span>
+              </div>
+              <div class="inputWrap">
+                <span class="prefix" id="pGross">€</span>
+                <input id="gross" class="control" inputmode="decimal" placeholder="1000.00" />
+              </div>
+              <div class="hint">Gross = Net + Tax</div>
+            </div>
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <div class="labelRow">
+                <label for="tax">Roerende voorheffing</label>
+                <span class="mini">Tax amount</span>
+              </div>
+              <div class="inputWrap">
+                <span class="prefix" id="pTax">€</span>
+                <input id="tax" class="control" inputmode="decimal" placeholder="300.00" />
+              </div>
+              <div class="hint">Gross = Tax ÷ rate</div>
+            </div>
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <div class="labelRow">
+                <label for="net">Net dividend</label>
+                <span class="mini">After tax</span>
+              </div>
+              <div class="inputWrap">
+                <span class="prefix" id="pNet">€</span>
+                <input id="net" class="control" inputmode="decimal" placeholder="700.00" />
+              </div>
+              <div class="hint">Gross = Net ÷ (1 − rate)</div>
+            </div>
+          </div>
+
+          <div class="btnRow">
+            <button class="btn btnPrimary" id="calcBtn" type="button">Calculate</button>
+            <button class="btn" id="useLastBtn" type="button">Use last edited only</button>
+            <button class="btn" id="clearBtn" type="button">Clear</button>
+          </div>
+
+          <div class="foot">Tip: press <kbd>Enter</kbd> in any field to calculate. Use commas or dots for decimals.</div>
+        </div>
+      </section>
+
+      <aside class="card" aria-label="Results">
+        <div class="cardHead">
+          <h2 class="cardTitle">Results</h2>
+          <div class="cardMeta" id="rateMeta">Rate: 30%</div>
+        </div>
+
+        <div class="content">
+          <div class="resultBox">
+            <div class="rows">
+              <div class="rrow"><div class="k">Gross</div><div class="v" id="rGross">—</div></div>
+              <div class="rrow"><div class="k">Tax (RV)</div><div class="v" id="rTax">—</div></div>
+              <div class="rrow"><div class="k">Net</div><div class="v" id="rNet">—</div></div>
+              <div class="rrow"><div class="k">Effective tax rate</div><div class="v" id="rEff">—</div></div>
+            </div>
+          </div>
+
+          <div class="status" id="status">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="statusText">Ready. Enter a value and hit Calculate.</span>
+          </div>
+
+          <div class="foot" style="margin-top:12px;">
+            This is a simple arithmetic helper. For legal/tax specifics, confirm VVPR-bis eligibility & rates with your accountant.
+          </div>
+        </div>
+      </aside>
+    </div>
+            <div class="field">
+              <div class="labelRow">
+                <label for="currency">Currency</label>
+                <span class="mini">Display</span>
+              </div>
+              <select id="currency" class="control" style="padding-left:12px">
+                <option value="€" selected>€ (EUR)</option>
+                <option value="">(none)</option>
+                <option value="$">$ (USD)</option>
+                <option value="£">£ (GBP)</option>
+              </select>
+              <div class="hint">Formatting only (no FX conversion).</div>
+            </div>
+  </div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const els = {
+    rate: $('rate'),            // hidden input
+    currency: $('currency'),
+    gross: $('gross'),
+    tax: $('tax'),
+    net: $('net'),
+
+    pGross: $('pGross'),
+    pTax: $('pTax'),
+    pNet: $('pNet'),
+
+    rGross: $('rGross'),
+    rTax: $('rTax'),
+    rNet: $('rNet'),
+    rEff: $('rEff'),
+
+    modePill: $('modePill'),
+    rateMeta: $('rateMeta'),
+
+    status: $('status'),
+    statusText: $('statusText'),
+
+    calcBtn: $('calcBtn'),
+    useLastBtn: $('useLastBtn'),
+    clearBtn: $('clearBtn'),
+  };
+
+  let lastEdited = null;
+
+  function parseAmount(v){
+    if (v == null) return null;
+    const cleaned = String(v).trim().replace(/\s+/g,'').replace(',', '.');
+    if (cleaned === '') return null;
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function currencySymbol(){ return els.currency.value || ''; }
+
+  function fmtMoney(n){
+    if (!Number.isFinite(n)) return '—';
+    const sym = currencySymbol();
+    const abs = Math.abs(n);
+    const s = new Intl.NumberFormat(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(abs);
+    return (n < 0 ? '−' : '') + sym + s;
+  }
+
+  function setStatus(msg, ok = true){
+    els.statusText.textContent = msg || '';
+    els.status.classList.remove('ok','bad');
+    els.status.classList.add(ok ? 'ok' : 'bad');
+  }
+
+  function updatePrefixes(){
+    const sym = currencySymbol() || ' ';
+    els.pGross.textContent = sym;
+    els.pTax.textContent = sym;
+    els.pNet.textContent = sym;
+  }
+
+  function filledCount(){
+    const g = parseAmount(els.gross.value);
+    const t = parseAmount(els.tax.value);
+    const n = parseAmount(els.net.value);
+    return [g,t,n].filter(v => v !== null).length;
+  }
+
+  function pickMode(){
+    if (lastEdited && parseAmount(els[lastEdited].value) !== null) return lastEdited;
+    const filled = ['gross','tax','net'].filter(k => parseAmount(els[k].value) !== null);
+    return filled.length === 1 ? filled[0] : null;
+  }
+
+  function calculate(){
+    const r = parseAmount(els.rate.value);
+    const mode = pickMode();
+
+    els.rateMeta.textContent = `Rate: ${(r*100).toFixed(0)}%`;
+
+    if (!(r >= 0 && r < 1)){
+      els.modePill.textContent = 'Invalid rate';
+      setStatus('Invalid rate selected.', false);
+      return;
+    }
+
+    if (!mode){
+      const c = filledCount();
+      els.modePill.textContent = (c === 0) ? 'Waiting' : 'Ambiguous';
+      setStatus(
+        c === 0
+          ? 'Enter a value in one field (Gross, Tax, or Net).'
+          : 'Multiple fields are filled. Click “Use last edited only” or clear extra fields.',
+        false
+      );
+      return;
+    }
+
+    const gIn = parseAmount(els.gross.value);
+    const tIn = parseAmount(els.tax.value);
+    const nIn = parseAmount(els.net.value);
+
+    let gross, tax, net;
+
+    if (mode === 'gross'){
+      gross = gIn;
+      tax = gross * r;
+      net = gross - tax;
+    } else if (mode === 'tax'){
+      tax = tIn;
+      if (r === 0){
+        els.modePill.textContent = 'Tax mode';
+        setStatus('Rate is 0%, tax input cannot be used.', false);
+        return;
+      }
+      gross = tax / r;
+      net = gross - tax;
+    } else if (mode === 'net'){
+      net = nIn;
+      if (r === 1){
+        els.modePill.textContent = 'Net mode';
+        setStatus('Rate is 100%, net input cannot be used.', false);
+        return;
+      }
+      gross = net / (1 - r);
+      tax = gross - net;
+    }
+
+    const eff = gross !== 0 ? tax / gross : NaN;
+
+    els.rGross.textContent = fmtMoney(gross);
+    els.rTax.textContent = fmtMoney(tax);
+    els.rNet.textContent = fmtMoney(net);
+    els.rEff.textContent = Number.isFinite(eff) ? (eff*100).toFixed(2) + '%' : '—';
+
+    if (mode !== 'gross') els.gross.value = Number.isFinite(gross) ? gross.toFixed(2) : '';
+    if (mode !== 'tax') els.tax.value = Number.isFinite(tax) ? tax.toFixed(2) : '';
+    if (mode !== 'net') els.net.value = Number.isFinite(net) ? net.toFixed(2) : '';
+
+    els.modePill.textContent = mode.toUpperCase();
+
+    if (gross < 0 || tax < 0 || net < 0){
+      setStatus('Computed a negative value — check your input.', false);
+    } else {
+      setStatus(`Calculated from ${mode.toUpperCase()} at ${(r*100).toFixed(0)}%.`, true);
+    }
+  }
+
+  function useLastOnly(){
+    if (!lastEdited){
+      els.modePill.textContent = 'Pick a field';
+      setStatus('Click a field, type a value, then try again.', false);
+      return;
+    }
+    const keep = lastEdited;
+    ['gross','tax','net'].forEach(k => { if (k !== keep) els[k].value = ''; });
+    els.modePill.textContent = `Using ${keep.toUpperCase()}`;
+    setStatus(`Keeping only ${keep.toUpperCase()}. Press Calculate.`, true);
+  }
+
+  function clearAll(){
+    els.gross.value = '';
+    els.tax.value = '';
+    els.net.value = '';
+    els.rGross.textContent = '—';
+    els.rTax.textContent = '—';
+    els.rNet.textContent = '—';
+    els.rEff.textContent = '—';
+    lastEdited = null;
+    els.modePill.textContent = 'Ready';
+    setStatus('Ready. Enter a value and hit Calculate.', true);
+  }
+
+  // ---- segmented control wiring ----
+  const segBtns = Array.from(document.querySelectorAll('.segBtn'));
+  function setRateFromButton(btn){
+    const rate = btn.getAttribute('data-rate');
+    els.rate.value = rate;
+
+    segBtns.forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+    calculate();
+  }
+  segBtns.forEach(btn => btn.addEventListener('click', () => setRateFromButton(btn)));
+
+  // events
+  ['gross','tax','net'].forEach(k => {
+    els[k].addEventListener('input', () => { lastEdited = k; });
+    els[k].addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
+  });
+
+  els.currency.addEventListener('change', () => { updatePrefixes(); calculate(); });
+
+  els.calcBtn.addEventListener('click', calculate);
+  els.useLastBtn.addEventListener('click', useLastOnly);
+  els.clearBtn.addEventListener('click', clearAll);
+
+  // init
+  updatePrefixes();
+  calculate();
+})();
+</script>
+</body>
+</html>
