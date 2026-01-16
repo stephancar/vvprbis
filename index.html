@@ -1,630 +1,921 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>VVPR-bis Dividend Calculator</title>
+<html lang="en-BE">
+  <head>
+    <meta charset="UTF-8" />
 
-  <style>
-    :root{
-      --bg0:#05060a;
-      --bg1:#0b1020;
-      --card: rgba(255,255,255,.08);
-      --card2: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.12);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.70);
-      --muted2: rgba(255,255,255,.55);
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --shadow2: 0 12px 40px rgba(0,0,0,.35);
+    <!-- ✅ Non-zoomable on mobile (no double-tap zoom / no pinch zoom) -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
 
-      --r: 18px;
+    <!-- ✅ SEO -->
+    <title>VVPR-bis Dividend Calculator (Belgium) — Withholding Tax / Roerende Voorheffing (RV)</title>
+    <meta
+      name="description"
+      content="Free VVPR-bis dividend calculator for Belgium. Enter gross dividend, withholding tax (roerende voorheffing / RV), or net dividend and compute the rest instantly. Rates: 15%, 18%, 20%, 30%. No cookies, no ads."
+    />
+    <link rel="canonical" href="https://steefware.com/vvprbis/" />
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+    <meta name="googlebot" content="index,follow" />
 
-      --ok: #4ade80;
-      --warn: #fb7185;
+    <!-- ✅ Open Graph / Twitter (remove image lines if you don’t have them) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="steefware" />
+    <meta property="og:title" content="VVPR-bis Dividend Calculator (Belgium) — Withholding Tax / RV" />
+    <meta
+      property="og:description"
+      content="Compute gross, net and Belgian withholding tax (roerende voorheffing / RV). Enter one value and get the rest. Rates: 15%, 18%, 20%, 30%."
+    />
+    <meta property="og:url" content="https://steefware.com/vvprbis/" />
+    <meta property="og:image" content="https://steefware.com/og/vvprbis.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VVPR-bis Dividend Calculator (Belgium) — Withholding Tax / RV" />
+    <meta
+      name="twitter:description"
+      content="Enter gross, withholding tax (RV), or net dividend and compute the rest instantly. No cookies, no ads."
+    />
+    <meta name="twitter:image" content="https://steefware.com/og/vvprbis.png" />
 
-      --ring: rgba(56,189,248,.40);
-      --ring2: rgba(168,85,247,.32);
-    }
+    <!-- Tailwind (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body{
-      margin:0;
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1100px 700px at 12% 10%, rgba(56,189,248,.22), transparent 60%),
-        radial-gradient(900px 650px at 88% 18%, rgba(168,85,247,.20), transparent 55%),
-        radial-gradient(700px 520px at 45% 95%, rgba(34,197,94,.16), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x:hidden;
-    }
-    body::before{
-      content:"";
-      position:fixed; inset:-40%;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
-      opacity:.06;
-      transform: rotate(7deg);
-      pointer-events:none;
-      mix-blend-mode: overlay;
-    }
+    <!-- PWA niceties (optional; keep even if you don’t add a manifest yet) -->
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- <link rel="manifest" href="/manifest.webmanifest" /> -->
 
-    .wrap{ max-width: 1060px; margin: 0 auto; padding: 22px 18px 40px; }
+    <!-- ✅ Structured data: WebApplication + FAQ -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://steefware.com/#website",
+            "url": "https://steefware.com/",
+            "name": "steefware",
+            "description": "Simple tools. No cookies, no ads.",
+            "inLanguage": "en-BE"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://steefware.com/vvprbis/#webpage",
+            "url": "https://steefware.com/vvprbis/",
+            "name": "VVPR-bis Dividend Calculator (Belgium)",
+            "isPartOf": { "@id": "https://steefware.com/#website" },
+            "inLanguage": "en-BE",
+            "about": [
+              { "@type": "Thing", "name": "VVPR-bis" },
+              { "@type": "Thing", "name": "Belgian withholding tax" },
+              { "@type": "Thing", "name": "Roerende voorheffing" }
+            ]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://steefware.com/vvprbis/#app",
+            "name": "VVPR-bis Dividend Calculator",
+            "applicationCategory": "FinanceApplication",
+            "operatingSystem": "Any",
+            "isAccessibleForFree": true,
+            "url": "https://steefware.com/vvprbis/",
+            "description": "Calculator for Belgian dividends: enter gross dividend, withholding tax (roerende voorheffing / RV), or net dividend to compute the rest. Supports 15%, 18%, 20%, and 30% rates.",
+            "creator": {
+              "@type": "Organization",
+              "name": "steefware",
+              "url": "https://steefware.com/"
+            },
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://steefware.com/vvprbis/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What does this VVPR-bis calculator compute?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "It computes the relationship between gross dividend, withholding tax (roerende voorheffing / RV), and net dividend using the selected rate (15%, 18%, 20%, or 30%)."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Do you store my data or use cookies?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. This tool runs in your browser. It does not use cookies or analytics."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does this tool confirm VVPR-bis eligibility?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. It is an arithmetic helper. Eligibility and the correct rate depend on your situation—confirm with your accountant."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
 
-    .topbar{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:14px;
-      margin-top: 10px;
-      margin-bottom: 18px;
-    }
-    .brand{ display:flex; gap:12px; align-items:center; min-width: 0; }
-    .logo{
-      width:44px; height:44px; border-radius: 14px;
-      background:
-        radial-gradient(14px 14px at 25% 25%, rgba(255,255,255,.55), transparent 60%),
-        linear-gradient(135deg, rgba(56,189,248,.9), rgba(168,85,247,.85));
-      box-shadow: 0 10px 30px rgba(56,189,248,.22), 0 10px 30px rgba(168,85,247,.16);
-      border: 1px solid rgba(255,255,255,.18);
-    }
-    h1{ font-size: 1.15rem; line-height: 1.15; margin:0; letter-spacing: -0.02em; }
-    .sub{ margin-top: 4px; color: var(--muted); font-size: 0.95rem; }
+    <style>
+      /* --- Mobile interaction guards (helps prevent double-tap/pinch behaviors) --- */
+      html,
+      body {
+        height: 100%;
+        overscroll-behavior: none;
+      }
+      body {
+        -webkit-text-size-adjust: 100%;
+        touch-action: manipulation; /* discourages double-tap zoom on many browsers */
+      }
 
-    .pill{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: var(--shadow2);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color: var(--muted);
-      font-size:.92rem;
-      white-space: nowrap;
-    }
-    .pill b{ color: var(--text); font-weight: 650; }
+      /* Steefware-style: keep native, but make range consistent */
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 28px;
+        background: transparent;
+      }
+      input[type="range"]:focus {
+        outline: none;
+      }
 
-    .grid{ display:grid; grid-template-columns: 1fr; gap: 14px; }
-    @media (min-width: 900px){ .grid{ grid-template-columns: 1.12fr .88fr; gap: 16px; } }
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 6px;
+        border-radius: 999px;
+        background: #000;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: #fff;
+        border: 2px solid #000;
+        margin-top: -6px;
+        box-shadow: 2px 2px 0 0 #000;
+      }
 
-    .card{
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      overflow:hidden;
-      position:relative;
-    }
-    .card::after{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
-                  radial-gradient(700px 260px at 10% 0%, rgba(56,189,248,.12), transparent 60%),
-                  radial-gradient(700px 260px at 90% 0%, rgba(168,85,247,.10), transparent 60%);
-      pointer-events:none;
-      opacity:.85;
-    }
-    .card > *{ position:relative; z-index:1; }
+      input[type="range"]::-moz-range-track {
+        height: 6px;
+        border-radius: 999px;
+        background: #000;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: #fff;
+        border: 2px solid #000;
+        box-shadow: 2px 2px 0 0 #000;
+      }
+    </style>
+  </head>
 
-    .cardHead{
-      padding: 18px 18px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap: 10px;
-    }
-    .cardTitle{ margin:0; font-size: 1rem; letter-spacing:-0.015em; }
-    .cardMeta{ color: var(--muted2); font-size:.88rem; text-align:right; }
-    .content{ padding: 16px 18px 18px; }
+  <body class="bg-white text-black antialiased">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <!-- Header (steefware style) -->
+      <header class="flex items-center justify-between py-6">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 rounded-xl border-2 border-black px-3 py-2 text-sm font-black tracking-tight shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+          aria-label="steefware home"
+        >
+          <span class="inline-block h-2 w-2 rounded-full bg-fuchsia-500"></span>
+          steefware.com
+        </a>
 
-    .controls{ display:grid; grid-template-columns: 1fr; gap: 12px; }
-    @media (min-width: 560px){ .controls{ grid-template-columns: 1fr 1fr; } }
+        <nav class="flex items-center gap-3 text-sm font-semibold">
+          <a
+            href="#tool"
+            class="rounded-lg px-2 py-1 underline underline-offset-4 decoration-2 decoration-black/30 transition-colors duration-150 hover:decoration-black focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+            >app</a
+          >
+          <a
+            href="#about"
+            class="rounded-lg px-2 py-1 underline underline-offset-4 decoration-2 decoration-black/30 transition-colors duration-150 hover:decoration-black focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+            >about</a
+          >
+        </nav>
+      </header>
 
-    .field{ display:flex; flex-direction:column; gap:8px; }
-    .labelRow{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
-    label{ font-size: .92rem; font-weight: 650; letter-spacing: -0.01em; color: rgba(255,255,255,.90); }
-    .mini{ font-size:.82rem; color: var(--muted2); }
+      <!-- Hero -->
+      <main class="pb-14 pt-2">
+        <section class="relative">
+          <div class="rounded-3xl border-2 border-black p-6 shadow-[8px_8px_0_0_#000] sm:p-10">
+            <h1 class="text-balance text-4xl font-black tracking-tight sm:text-6xl">
+              VVPR-bis Dividend Calculator
+            </h1>
 
-    input, button { font: inherit; color: var(--text); outline: none; }
+            <div class="mt-6 space-y-2 text-base font-semibold sm:text-xl">
+              <p>
+                Belgium: compute <span class="font-black">gross</span>,
+                <span class="font-black">withholding tax</span> (<span class="font-black">roerende voorheffing</span> / RV),
+                and <span class="font-black">net dividend</span>.
+              </p>
+              <p class="text-sm sm:text-base">
+                Enter <span class="font-black">one</span> value and we compute the rest. No cookies. No ads. Runs entirely in your browser.
+              </p>
+            </div>
 
-    .inputWrap{ position:relative; }
-    .prefix{
-      position:absolute; left: 12px; top: 50%;
-      transform: translateY(-50%);
-      font-weight: 700;
-      color: rgba(255,255,255,.60);
-      pointer-events:none;
-      font-variant-numeric: tabular-nums;
-    }
-    .control{
-      width:100%;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.20);
-      padding: 12px 12px 12px 36px;
-      transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease;
-      font-variant-numeric: tabular-nums;
-    }
-    .control:focus{
-      border-color: rgba(56,189,248,.55);
-      box-shadow: 0 0 0 6px var(--ring), 0 0 0 12px rgba(168,85,247,.10);
-    }
-    .control:hover{ border-color: rgba(255,255,255,.22); }
+            <div
+              class="pointer-events-none absolute -right-2 -top-2 hidden h-10 w-10 rotate-6 rounded-2xl border-2 border-black bg-amber-300 shadow-[4px_4px_0_0_#000] sm:block"
+              aria-hidden="true"
+            ></div>
+          </div>
+        </section>
 
-    .hint{ color: var(--muted2); font-size: .86rem; line-height: 1.25; }
+        <!-- Tool -->
+        <section id="tool" class="mt-12">
+          <div class="flex items-end justify-between gap-4">
+            <h2 class="text-sm font-black uppercase tracking-widest">Tool</h2>
+            <div id="lastRun" class="text-xs font-semibold text-black/60"></div>
+          </div>
 
-    /* ---------- SaaS segmented control (rate picker) ---------- */
-    .segWrap{
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 999px;
-      padding: 6px;
-      display:flex;
-      gap:6px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-      overflow:hidden;
-    }
-    .segBtn{
-      appearance:none;
-      border: 1px solid transparent;
-      background: transparent;
-      color: rgba(255,255,255,.82);
-      padding: 10px 12px;
-      border-radius: 999px;
-      cursor:pointer;
-      flex: 1 1 0;
-      min-width: 0;
-      text-align:center;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      transition: transform .12s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
-      font-variant-numeric: tabular-nums;
-      user-select:none;
-      white-space: nowrap;
-    }
-    .segBtn small{
-      font-weight: 650;
-      color: rgba(255,255,255,.65);
-    }
-    .segBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
-    .segBtn:active{ transform: translateY(0px); }
+          <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <!-- Inputs -->
+            <div
+              class="rounded-2xl border-2 border-black bg-white p-6 shadow-[6px_6px_0_0_#000]"
+              aria-label="Inputs"
+            >
+              <div class="flex items-start justify-between gap-4">
+                <h3 class="text-xl font-black tracking-tight">Inputs</h3>
+                <span
+                  id="unitBadge"
+                  class="inline-flex items-center rounded-full border-2 border-black px-3 py-1 text-xs font-black shadow-[3px_3px_0_0_#000]"
+                  title="Units used by this calculator"
+                >
+                  € / %
+                </span>
+              </div>
 
-    .segBtn[aria-pressed="true"]{
-      background:
-        radial-gradient(500px 140px at 25% 20%, rgba(255,255,255,.20), transparent 55%),
-        linear-gradient(135deg, rgba(56,189,248,.75), rgba(168,85,247,.70));
-      border-color: rgba(255,255,255,.16);
-      color: rgba(255,255,255,.96);
-      box-shadow: 0 14px 40px rgba(56,189,248,.14), 0 14px 40px rgba(168,85,247,.12);
-    }
-    .segBtn:focus-visible{
-      outline: none;
-      box-shadow: 0 0 0 6px var(--ring), 0 0 0 12px rgba(168,85,247,.10);
-    }
-    /* Wrap to 2 rows on small screens if needed */
-    @media (max-width: 420px){
-      .segWrap{ flex-wrap: wrap; border-radius: 18px; }
-      .segBtn{ flex: 1 1 calc(50% - 6px); }
-    }
+              <!-- Inputs -->
+              <div class="mt-5 grid grid-cols-1 gap-4">
+                <!-- Rate segmented -->
+                <div>
+                  <label class="block text-xs font-black uppercase tracking-widest">
+                    Withholding rate (RV)
+                  </label>
+                  <div
+                    class="mt-2 flex flex-wrap gap-2"
+                    role="group"
+                    aria-label="Withholding tax rate"
+                  >
+                    <button
+                      type="button"
+                      class="segBtn inline-flex flex-1 items-center justify-center rounded-xl border-2 border-black bg-white px-3 py-2 text-sm font-black shadow-[3px_3px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                      data-rate="0.15"
+                      aria-pressed="false"
+                    >
+                      15%
+                    </button>
+                    <button
+                      type="button"
+                      class="segBtn inline-flex flex-1 items-center justify-center rounded-xl border-2 border-black bg-white px-3 py-2 text-sm font-black shadow-[3px_3px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                      data-rate="0.18"
+                      aria-pressed="false"
+                    >
+                      18%
+                    </button>
+                    <button
+                      type="button"
+                      class="segBtn inline-flex flex-1 items-center justify-center rounded-xl border-2 border-black bg-white px-3 py-2 text-sm font-black shadow-[3px_3px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                      data-rate="0.20"
+                      aria-pressed="false"
+                    >
+                      20%
+                    </button>
+                    <button
+                      type="button"
+                      class="segBtn inline-flex flex-1 items-center justify-center rounded-xl border-2 border-black bg-black px-3 py-2 text-sm font-black text-white shadow-[3px_3px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                      data-rate="0.30"
+                      aria-pressed="true"
+                      title="Default"
+                    >
+                      30%
+                    </button>
+                  </div>
+                  <input type="hidden" id="rate" value="0.30" />
+                  <p class="mt-1 text-xs font-semibold text-black/60">Tax = Gross × rate</p>
+                </div>
 
-    .resultBox{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
-      padding: 14px 14px;
-    }
-    .rows{ display:grid; gap:10px; margin-top: 8px; }
-    .rrow{ display:flex; justify-content:space-between; gap:10px; align-items:baseline; }
-    .rrow .k{ color: var(--muted); font-size:.92rem; }
-    .rrow .v{ font-weight: 760; letter-spacing:-0.01em; font-variant-numeric: tabular-nums; }
+                <!-- Currency -->
+                <div>
+                  <label for="currency" class="block text-xs font-black uppercase tracking-widest">
+                    Currency
+                  </label>
+                  <select
+                    id="currency"
+                    class="mt-2 w-full rounded-xl border-2 border-black px-3 py-2 text-sm font-semibold shadow-[3px_3px_0_0_#000] focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                  >
+                    <option value="€" selected>€ (EUR)</option>
+                    <option value="">(none)</option>
+                    <option value="$">$ (USD)</option>
+                    <option value="£">£ (GBP)</option>
+                  </select>
+                  <p class="mt-1 text-xs font-semibold text-black/60">Formatting only (no FX conversion).</p>
+                </div>
 
-    .status{
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      color: var(--muted);
-      font-size: .92rem;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .dot{
-      width:10px; height:10px; border-radius: 999px;
-      background: rgba(255,255,255,.35);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
-      flex: 0 0 auto;
-    }
-    .status.ok{ color: rgba(74,222,128,.95); border-color: rgba(74,222,128,.18); }
-    .status.ok .dot{ background: rgba(74,222,128,.9); box-shadow: 0 0 0 4px rgba(74,222,128,.10); }
-    .status.bad{ color: rgba(251,113,133,.95); border-color: rgba(251,113,133,.18); }
-    .status.bad .dot{ background: rgba(251,113,133,.9); box-shadow: 0 0 0 4px rgba(251,113,133,.12); }
+                <!-- Gross -->
+                <div>
+                  <label for="gross" class="block text-xs font-black uppercase tracking-widest">
+                    Gross dividend
+                  </label>
+                  <div class="mt-2 flex items-stretch gap-2">
+                    <span
+                      id="pGross"
+                      class="inline-flex w-11 items-center justify-center rounded-xl border-2 border-black bg-white text-sm font-black shadow-[3px_3px_0_0_#000]"
+                      aria-hidden="true"
+                      >€</span
+                    >
+                    <input
+                      id="gross"
+                      inputmode="decimal"
+                      placeholder="1000.00"
+                      class="w-full rounded-xl border-2 border-black px-3 py-2 text-sm font-semibold shadow-[3px_3px_0_0_#000] focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                    />
+                  </div>
+                  <p class="mt-1 text-xs font-semibold text-black/60">Gross = Net + Tax</p>
+                </div>
 
-    .btnRow{ display:flex; flex-wrap:wrap; gap:10px; margin-top: 12px; }
-    .btn{
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      padding: 11px 12px;
-      border-radius: 14px;
-      cursor:pointer;
-      transition: transform .12s ease, box-shadow .18s ease, border-color .18s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); }
-    .btn:active{ transform: translateY(0px); }
-    .btnPrimary{
-      border-color: rgba(56,189,248,.22);
-      background:
-        radial-gradient(600px 140px at 20% 20%, rgba(255,255,255,.20), transparent 50%),
-        linear-gradient(135deg, rgba(56,189,248,.75), rgba(168,85,247,.70));
-      box-shadow: 0 18px 50px rgba(56,189,248,.18), 0 18px 50px rgba(168,85,247,.14);
-      font-weight: 750;
-    }
+                <!-- Tax -->
+                <div>
+                  <label for="tax" class="block text-xs font-black uppercase tracking-widest">
+                    Withholding tax (RV)
+                  </label>
+                  <div class="mt-2 flex items-stretch gap-2">
+                    <span
+                      id="pTax"
+                      class="inline-flex w-11 items-center justify-center rounded-xl border-2 border-black bg-white text-sm font-black shadow-[3px_3px_0_0_#000]"
+                      aria-hidden="true"
+                      >€</span
+                    >
+                    <input
+                      id="tax"
+                      inputmode="decimal"
+                      placeholder="300.00"
+                      class="w-full rounded-xl border-2 border-black px-3 py-2 text-sm font-semibold shadow-[3px_3px_0_0_#000] focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                    />
+                  </div>
+                  <p class="mt-1 text-xs font-semibold text-black/60">Gross = Tax ÷ rate</p>
+                </div>
 
-    .foot{ margin-top: 14px; color: var(--muted2); font-size: .88rem; line-height: 1.25; }
-    kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: .85em;
-      padding: 2px 6px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.22);
-    }
-  </style>
-</head>
+                <!-- Net -->
+                <div>
+                  <label for="net" class="block text-xs font-black uppercase tracking-widest">
+                    Net dividend
+                  </label>
+                  <div class="mt-2 flex items-stretch gap-2">
+                    <span
+                      id="pNet"
+                      class="inline-flex w-11 items-center justify-center rounded-xl border-2 border-black bg-white text-sm font-black shadow-[3px_3px_0_0_#000]"
+                      aria-hidden="true"
+                      >€</span
+                    >
+                    <input
+                      id="net"
+                      inputmode="decimal"
+                      placeholder="700.00"
+                      class="w-full rounded-xl border-2 border-black px-3 py-2 text-sm font-semibold shadow-[3px_3px_0_0_#000] focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                    />
+                  </div>
+                  <p class="mt-1 text-xs font-semibold text-black/60">Gross = Net ÷ (1 − rate)</p>
+                </div>
+              </div>
 
-<body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div style="min-width:0">
-          <h1>VVPR-bis Dividend Calculator</h1>
-          <div class="sub">Enter <b>one</b> value (Gross, Tax, or Net) → we compute the rest.</div>
-        </div>
-      </div>
+              <!-- Buttons -->
+              <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                <button
+                  id="calcBtn"
+                  class="inline-flex items-center justify-center rounded-xl border-2 border-black bg-black px-4 py-2 text-sm font-black text-white shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                  type="button"
+                >
+                  Calculate
+                </button>
 
-      <div class="pill" title="How it works">
-        <span>Mode:</span>
-        <b id="modePill">Ready</b>
-      </div>
+                <button
+                  id="useLastBtn"
+                  class="inline-flex items-center justify-center rounded-xl border-2 border-black bg-white px-4 py-2 text-sm font-black shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                  type="button"
+                >
+                  Use last edited only
+                </button>
+
+                <button
+                  id="resetBtn"
+                  class="inline-flex items-center justify-center rounded-xl border-2 border-black bg-white px-4 py-2 text-sm font-black shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                  type="button"
+                >
+                  Clear
+                </button>
+
+                <button
+                  id="copyBtn"
+                  class="inline-flex items-center justify-center rounded-xl border-2 border-black bg-white px-4 py-2 text-sm font-black shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                  type="button"
+                >
+                  Copy result
+                </button>
+
+                <button
+                  id="shareBtn"
+                  class="inline-flex items-center justify-center rounded-xl border-2 border-black bg-white px-4 py-2 text-sm font-black shadow-[4px_4px_0_0_#000] transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:translate-x-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-black focus-visible:ring-offset-4 focus-visible:ring-offset-white"
+                  type="button"
+                >
+                  Share
+                </button>
+              </div>
+
+              <p class="mt-4 text-xs font-semibold text-black/60">
+                Tip: press <span class="font-mono font-black">Enter</span> in any field to calculate. Use commas or dots for decimals.
+              </p>
+
+              <div
+                id="errorBox"
+                class="mt-5 hidden rounded-2xl border-2 border-black bg-amber-300 p-4 text-sm font-black shadow-[4px_4px_0_0_#000]"
+                role="alert"
+              >
+                Error: <span id="errorMsg"></span>
+              </div>
+
+              <div
+                id="bindingError"
+                class="mt-5 hidden rounded-2xl border-2 border-black bg-amber-300 p-4 text-sm font-black shadow-[4px_4px_0_0_#000]"
+              >
+                Binding error: missing required DOM element(s). Check console.
+              </div>
+            </div>
+
+            <!-- Results -->
+            <div
+              class="rounded-2xl border-2 border-black bg-white p-6 shadow-[6px_6px_0_0_#000]"
+              aria-label="Results"
+            >
+              <div class="flex items-start justify-between gap-4">
+                <h3 class="text-xl font-black tracking-tight">Results</h3>
+                <span
+                  id="statusBadge"
+                  class="inline-flex items-center rounded-full border-2 border-black px-3 py-1 text-xs font-black shadow-[3px_3px_0_0_#000]"
+                  title="Result status"
+                >
+                  OK
+                </span>
+              </div>
+
+              <div class="mt-5 rounded-2xl border-2 border-black p-6 shadow-[6px_6px_0_0_#000]">
+                <div class="text-xs font-black uppercase tracking-widest text-black/70">Net dividend</div>
+                <div id="primaryOut" class="mt-2 text-5xl font-black tracking-tight sm:text-6xl">
+                  —
+                </div>
+
+                <div id="secondaryOut" class="mt-3 text-sm font-semibold text-black/70">
+                  —
+                </div>
+
+                <div class="mt-5">
+                  <div class="flex items-center justify-between text-xs font-semibold text-black/60">
+                    <span>Gross</span><span>Net</span>
+                  </div>
+                  <div class="mt-2 rounded-full border-2 border-black p-1">
+                    <div
+                      id="bar"
+                      class="h-3 w-0 rounded-full bg-black transition-[width] duration-300"
+                      style="width: 0%"
+                      aria-label="Net as % of gross"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="mt-6 h-2 w-16 rounded-full bg-fuchsia-500"></div>
+                <p class="mt-3 text-xs font-semibold text-black/60" id="resultNote">
+                  Deterministic math. No network calls. Runs entirely in the browser.
+                </p>
+              </div>
+            </div>
+
+            <!-- About -->
+            <div id="about" class="md:col-span-2">
+              <div class="rounded-2xl border-2 border-black bg-white p-6 shadow-[6px_6px_0_0_#000]">
+                <div class="flex items-start justify-between gap-4">
+                  <h3 class="text-xl font-black tracking-tight">About</h3>
+                  <span
+                    class="inline-flex items-center rounded-full border-2 border-black px-3 py-1 text-xs font-black shadow-[3px_3px_0_0_#000]"
+                    title="Implementation note"
+                  >
+                    VVPR-bis
+                  </span>
+                </div>
+
+                <div class="mt-5 space-y-3 text-sm font-semibold text-black/75">
+                  <p>
+                    This is an arithmetic helper for Belgian dividends. It computes the relationship between
+                    <span class="font-black">gross dividend</span>, <span class="font-black">withholding tax</span>
+                    (<span class="font-black">roerende voorheffing</span>, RV) and
+                    <span class="font-black">net dividend</span> using a selected rate (15%, 18%, 20% or 30%).
+                  </p>
+                  <p>
+                    It does <span class="font-black">not</span> determine VVPR-bis eligibility. If you’re unsure which rate applies,
+                    confirm with your accountant.
+                  </p>
+                  <p class="text-xs text-black/60">
+                    SEO note: page includes structured data (WebApplication + FAQ) and indexable explanatory text.
+                  </p>
+
+                  <div class="rounded-xl border-2 border-black p-4 shadow-[3px_3px_0_0_#000]">
+                    <div class="text-xs font-black uppercase tracking-widest text-black/70">FAQ</div>
+                    <div class="mt-3 space-y-2">
+                      <details class="rounded-lg border-2 border-black px-3 py-2 shadow-[2px_2px_0_0_#000]">
+                        <summary class="cursor-pointer text-sm font-black">What does this calculator do?</summary>
+                        <p class="mt-2 text-sm font-semibold text-black/75">
+                          Enter gross, RV, or net dividend and it computes the other values using the selected rate.
+                        </p>
+                      </details>
+                      <details class="rounded-lg border-2 border-black px-3 py-2 shadow-[2px_2px_0_0_#000]">
+                        <summary class="cursor-pointer text-sm font-black">Do you store data or use cookies?</summary>
+                        <p class="mt-2 text-sm font-semibold text-black/75">
+                          No cookies. Inputs may be stored locally in your browser (localStorage) so returning users keep their last values.
+                        </p>
+                      </details>
+                      <details class="rounded-lg border-2 border-black px-3 py-2 shadow-[2px_2px_0_0_#000]">
+                        <summary class="cursor-pointer text-sm font-black">Is this legal/tax advice?</summary>
+                        <p class="mt-2 text-sm font-semibold text-black/75">
+                          No—simple math only. Confirm VVPR-bis eligibility and applicable rate with your accountant.
+                        </p>
+                      </details>
+                    </div>
+                  </div>
+
+                  <noscript>
+                    <div class="mt-4 rounded-xl border-2 border-black bg-amber-300 p-4 text-sm font-black shadow-[3px_3px_0_0_#000]">
+                      JavaScript required: this calculator runs entirely in your browser.
+                    </div>
+                  </noscript>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
 
+    <script>
+      (function () {
+        const el = (id) => document.getElementById(id);
 
+        // ---- App identity (change per app) ----
+        const APP_KEY = "steefware_vvprbis_v1";
 
-    <div class="grid">
-      <section class="card" aria-label="Inputs">
-        <div class="cardHead">
-          <h2 class="cardTitle">Inputs</h2>
-          <div class="cardMeta">Belgium • VVPR-bis / RV</div>
-        </div>
+        // ---- Binding check ----
+        const requiredIds = [
+          "rate","currency","gross","tax","net",
+          "pGross","pTax","pNet",
+          "primaryOut","secondaryOut","bar",
+          "resetBtn","lastRun","bindingError",
+          "copyBtn","shareBtn","statusBadge",
+          "errorBox","errorMsg","unitBadge",
+          "calcBtn","useLastBtn"
+        ];
+        const missing = requiredIds.filter((id) => !el(id));
+        if (missing.length) {
+          console.error("Binding error. Missing elements:", missing);
+          const box = el("bindingError");
+          if (box) box.classList.remove("hidden");
+          return;
+        }
 
-        <div class="content">
-          <div class="controls">
+        const rate = el("rate");
+        const currency = el("currency");
+        const gross = el("gross");
+        const tax = el("tax");
+        const net = el("net");
 
-            <!-- ✅ Replaces dropdown with segmented control -->
-            <div class="field" style="grid-column: 1 / -1;">
-              <div class="labelRow">
-                <label>Withholding rate</label>
-                <span class="mini">Tap</span>
-              </div>
-              <div class="segWrap" role="group" aria-label="Withholding rate">
-                <button class="segBtn" type="button" data-rate="0.15" aria-pressed="false">15%</button>
-                <button class="segBtn" type="button" data-rate="0.18" aria-pressed="false">18%</button>
-                <button class="segBtn" type="button" data-rate="0.20" aria-pressed="false">20%</button>
-                <button class="segBtn" type="button" data-rate="0.30" aria-pressed="true">30%</button>
-              </div>
-              <div class="hint">Tax = Gross × rate</div>
-              <!-- hidden input still used by JS logic -->
-              <input type="hidden" id="rate" value="0.30" />
-            </div>
+        const pGross = el("pGross");
+        const pTax = el("pTax");
+        const pNet = el("pNet");
 
+        const primaryOut = el("primaryOut");
+        const secondaryOut = el("secondaryOut");
+        const bar = el("bar");
+        const resetBtn = el("resetBtn");
+        const lastRun = el("lastRun");
+        const copyBtn = el("copyBtn");
+        const shareBtn = el("shareBtn");
+        const statusBadge = el("statusBadge");
+        const errorBox = el("errorBox");
+        const errorMsg = el("errorMsg");
+        const unitBadge = el("unitBadge");
 
-            <div class="field" style="grid-column: 1 / -1;">
-              <div class="labelRow">
-                <label for="gross">Gross dividend</label>
-                <span class="mini">Before tax</span>
-              </div>
-              <div class="inputWrap">
-                <span class="prefix" id="pGross">€</span>
-                <input id="gross" class="control" inputmode="decimal" placeholder="1000.00" />
-              </div>
-              <div class="hint">Gross = Net + Tax</div>
-            </div>
+        const calcBtn = el("calcBtn");
+        const useLastBtn = el("useLastBtn");
 
-            <div class="field" style="grid-column: 1 / -1;">
-              <div class="labelRow">
-                <label for="tax">Roerende voorheffing</label>
-                <span class="mini">Tax amount</span>
-              </div>
-              <div class="inputWrap">
-                <span class="prefix" id="pTax">€</span>
-                <input id="tax" class="control" inputmode="decimal" placeholder="300.00" />
-              </div>
-              <div class="hint">Gross = Tax ÷ rate</div>
-            </div>
+        let lastEdited = null;
 
-            <div class="field" style="grid-column: 1 / -1;">
-              <div class="labelRow">
-                <label for="net">Net dividend</label>
-                <span class="mini">After tax</span>
-              </div>
-              <div class="inputWrap">
-                <span class="prefix" id="pNet">€</span>
-                <input id="net" class="control" inputmode="decimal" placeholder="700.00" />
-              </div>
-              <div class="hint">Gross = Net ÷ (1 − rate)</div>
-            </div>
-          </div>
+        // ---- Utilities ----
+        function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+        function nowLabel() { return new Date().toLocaleString(); }
 
-          <div class="btnRow">
-            <button class="btn btnPrimary" id="calcBtn" type="button">Calculate</button>
-            <button class="btn" id="useLastBtn" type="button">Use last edited only</button>
-            <button class="btn" id="clearBtn" type="button">Clear</button>
-          </div>
+        function parseAmount(v) {
+          if (v == null) return null;
+          const cleaned = String(v).trim().replace(/\s+/g, "").replace(",", ".");
+          if (cleaned === "") return null;
+          const n = Number(cleaned);
+          return Number.isFinite(n) ? n : null;
+        }
 
-          <div class="foot">Tip: press <kbd>Enter</kbd> in any field to calculate. Use commas or dots for decimals.</div>
-        </div>
-      </section>
+        function currencySymbol() { return currency.value || ""; }
 
-      <aside class="card" aria-label="Results">
-        <div class="cardHead">
-          <h2 class="cardTitle">Results</h2>
-          <div class="cardMeta" id="rateMeta">Rate: 30%</div>
-        </div>
+        function fmtMoney(n) {
+          if (!Number.isFinite(n)) return "—";
+          const sym = currencySymbol();
+          const abs = Math.abs(n);
+          const s = new Intl.NumberFormat(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }).format(abs);
+          return (n < 0 ? "−" : "") + sym + s;
+        }
 
-        <div class="content">
-          <div class="resultBox">
-            <div class="rows">
-              <div class="rrow"><div class="k">Gross</div><div class="v" id="rGross">—</div></div>
-              <div class="rrow"><div class="k">Tax (RV)</div><div class="v" id="rTax">—</div></div>
-              <div class="rrow"><div class="k">Net</div><div class="v" id="rNet">—</div></div>
-              <div class="rrow"><div class="k">Effective tax rate</div><div class="v" id="rEff">—</div></div>
-            </div>
-          </div>
+        function showError(msg) {
+          errorMsg.textContent = msg;
+          errorBox.classList.remove("hidden");
+          statusBadge.textContent = "Check";
+        }
 
-          <div class="status" id="status">
-            <span class="dot" aria-hidden="true"></span>
-            <span id="statusText">Ready. Enter a value and hit Calculate.</span>
-          </div>
+        function clearError() {
+          errorBox.classList.add("hidden");
+          errorMsg.textContent = "";
+          statusBadge.textContent = "OK";
+        }
 
-          <div class="foot" style="margin-top:12px;">
-            This is a simple arithmetic helper. For legal/tax specifics, confirm VVPR-bis eligibility & rates with your accountant.
-          </div>
-        </div>
-      </aside>
-    </div>
-            <div class="field">
-              <div class="labelRow">
-                <label for="currency">Currency</label>
-                <span class="mini">Display</span>
-              </div>
-              <select id="currency" class="control" style="padding-left:12px">
-                <option value="€" selected>€ (EUR)</option>
-                <option value="">(none)</option>
-                <option value="$">$ (USD)</option>
-                <option value="£">£ (GBP)</option>
-              </select>
-              <div class="hint">Formatting only (no FX conversion).</div>
-            </div>
-  </div>
+        function updatePrefixes() {
+          const sym = currencySymbol() || " ";
+          pGross.textContent = sym;
+          pTax.textContent = sym;
+          pNet.textContent = sym;
+        }
 
-<script>
-(() => {
-  const $ = (id) => document.getElementById(id);
+        // ---- Persistence ----
+        function loadState() {
+          try {
+            const raw = localStorage.getItem(APP_KEY);
+            if (!raw) return;
+            const s = JSON.parse(raw);
+            if (!s || typeof s !== "object") return;
+            if (s.rate != null) rate.value = String(s.rate);
+            if (s.currency != null) currency.value = String(s.currency);
+            if (s.gross != null) gross.value = String(s.gross);
+            if (s.tax != null) tax.value = String(s.tax);
+            if (s.net != null) net.value = String(s.net);
+            if (s.lastEdited != null) lastEdited = String(s.lastEdited);
+          } catch (_) {}
+        }
 
-  const els = {
-    rate: $('rate'),            // hidden input
-    currency: $('currency'),
-    gross: $('gross'),
-    tax: $('tax'),
-    net: $('net'),
+        function saveState() {
+          try {
+            const s = {
+              rate: rate.value,
+              currency: currency.value,
+              gross: gross.value,
+              tax: tax.value,
+              net: net.value,
+              lastEdited
+            };
+            localStorage.setItem(APP_KEY, JSON.stringify(s));
+          } catch (_) {}
+        }
 
-    pGross: $('pGross'),
-    pTax: $('pTax'),
-    pNet: $('pNet'),
+        function filledCount() {
+          const g = parseAmount(gross.value);
+          const t = parseAmount(tax.value);
+          const n = parseAmount(net.value);
+          return [g, t, n].filter((v) => v !== null).length;
+        }
 
-    rGross: $('rGross'),
-    rTax: $('rTax'),
-    rNet: $('rNet'),
-    rEff: $('rEff'),
+        function pickMode() {
+          if (lastEdited && parseAmount(el(lastEdited).value) !== null) return lastEdited;
+          const filled = ["gross", "tax", "net"].filter((k) => parseAmount(el(k).value) !== null);
+          return filled.length === 1 ? filled[0] : null;
+        }
 
-    modePill: $('modePill'),
-    rateMeta: $('rateMeta'),
+        function setSegUIFromRate() {
+          const r = String(rate.value);
+          const buttons = Array.from(document.querySelectorAll(".segBtn"));
+          buttons.forEach((b) => {
+            const isOn = b.getAttribute("data-rate") === r;
+            b.setAttribute("aria-pressed", isOn ? "true" : "false");
+            // toggle steefware black/white style
+            b.classList.toggle("bg-black", isOn);
+            b.classList.toggle("text-white", isOn);
+            b.classList.toggle("bg-white", !isOn);
+            b.classList.toggle("text-black", !isOn);
+          });
+        }
 
-    status: $('status'),
-    statusText: $('statusText'),
+        function calculate({ silent = false } = {}) {
+          clearError();
 
-    calcBtn: $('calcBtn'),
-    useLastBtn: $('useLastBtn'),
-    clearBtn: $('clearBtn'),
-  };
+          const r = parseAmount(rate.value);
+          if (!(r >= 0 && r < 1)) {
+            showError("Invalid rate selected.");
+            primaryOut.textContent = "—";
+            secondaryOut.textContent = "—";
+            bar.style.width = "0%";
+            lastRun.textContent = `Live: ${nowLabel()}`;
+            saveState();
+            return;
+          }
 
-  let lastEdited = null;
+          const mode = pickMode();
+          const c = filledCount();
 
-  function parseAmount(v){
-    if (v == null) return null;
-    const cleaned = String(v).trim().replace(/\s+/g,'').replace(',', '.');
-    if (cleaned === '') return null;
-    const n = Number(cleaned);
-    return Number.isFinite(n) ? n : null;
-  }
+          if (!mode) {
+            if (!silent) {
+              showError(
+                c === 0
+                  ? "Enter a value in exactly one field (Gross, Tax, or Net)."
+                  : "Multiple fields are filled. Click “Use last edited only” or clear extra fields."
+              );
+            }
+            primaryOut.textContent = "—";
+            secondaryOut.textContent = "—";
+            bar.style.width = "0%";
+            lastRun.textContent = `Live: ${nowLabel()}`;
+            saveState();
+            return;
+          }
 
-  function currencySymbol(){ return els.currency.value || ''; }
+          const gIn = parseAmount(gross.value);
+          const tIn = parseAmount(tax.value);
+          const nIn = parseAmount(net.value);
 
-  function fmtMoney(n){
-    if (!Number.isFinite(n)) return '—';
-    const sym = currencySymbol();
-    const abs = Math.abs(n);
-    const s = new Intl.NumberFormat(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(abs);
-    return (n < 0 ? '−' : '') + sym + s;
-  }
+          let G, T, N;
 
-  function setStatus(msg, ok = true){
-    els.statusText.textContent = msg || '';
-    els.status.classList.remove('ok','bad');
-    els.status.classList.add(ok ? 'ok' : 'bad');
-  }
+          if (mode === "gross") {
+            G = gIn;
+            T = G * r;
+            N = G - T;
+          } else if (mode === "tax") {
+            T = tIn;
+            if (r === 0) {
+              showError("Rate is 0%, tax input cannot be used.");
+              return;
+            }
+            G = T / r;
+            N = G - T;
+          } else if (mode === "net") {
+            N = nIn;
+            if (r === 1) {
+              showError("Rate is 100%, net input cannot be used.");
+              return;
+            }
+            G = N / (1 - r);
+            T = G - N;
+          }
 
-  function updatePrefixes(){
-    const sym = currencySymbol() || ' ';
-    els.pGross.textContent = sym;
-    els.pTax.textContent = sym;
-    els.pNet.textContent = sym;
-  }
+          if (![G, T, N].every(Number.isFinite)) {
+            showError("Please enter a valid number.");
+            return;
+          }
 
-  function filledCount(){
-    const g = parseAmount(els.gross.value);
-    const t = parseAmount(els.tax.value);
-    const n = parseAmount(els.net.value);
-    return [g,t,n].filter(v => v !== null).length;
-  }
+          if (G < 0 || T < 0 || N < 0) {
+            showError("Computed a negative value — check your input.");
+            return;
+          }
 
-  function pickMode(){
-    if (lastEdited && parseAmount(els[lastEdited].value) !== null) return lastEdited;
-    const filled = ['gross','tax','net'].filter(k => parseAmount(els[k].value) !== null);
-    return filled.length === 1 ? filled[0] : null;
-  }
+          // write outputs
+          primaryOut.textContent = fmtMoney(N);
+          const eff = G !== 0 ? (T / G) : NaN;
 
-  function calculate(){
-    const r = parseAmount(els.rate.value);
-    const mode = pickMode();
+          secondaryOut.innerHTML =
+            `<div class="space-y-1">` +
+              `<div><span class="font-black">Gross:</span> ${fmtMoney(G)}</div>` +
+              `<div><span class="font-black">Tax (RV):</span> ${fmtMoney(T)} <span class="text-black/60">(${(r * 100).toFixed(0)}%)</span></div>` +
+              `<div><span class="font-black">Net:</span> ${fmtMoney(N)} <span class="text-black/60">(effective: ${Number.isFinite(eff) ? (eff * 100).toFixed(2) + "%" : "—"})</span></div>` +
+            `</div>`;
 
-    els.rateMeta.textContent = `Rate: ${(r*100).toFixed(0)}%`;
+          // progress: net as % of gross
+          const pct = G > 0 ? (N / G) * 100 : 0;
+          bar.style.width = `${clamp(pct, 0, 100)}%`;
 
-    if (!(r >= 0 && r < 1)){
-      els.modePill.textContent = 'Invalid rate';
-      setStatus('Invalid rate selected.', false);
-      return;
-    }
+          // fill other fields deterministically (don’t overwrite the user’s input field)
+          if (mode !== "gross") gross.value = G.toFixed(2);
+          if (mode !== "tax") tax.value = T.toFixed(2);
+          if (mode !== "net") net.value = N.toFixed(2);
 
-    if (!mode){
-      const c = filledCount();
-      els.modePill.textContent = (c === 0) ? 'Waiting' : 'Ambiguous';
-      setStatus(
-        c === 0
-          ? 'Enter a value in one field (Gross, Tax, or Net).'
-          : 'Multiple fields are filled. Click “Use last edited only” or clear extra fields.',
-        false
-      );
-      return;
-    }
+          unitBadge.textContent = "€ / %";
+          statusBadge.textContent = "OK";
+          lastRun.textContent = `Live: ${nowLabel()} • Mode: ${mode.toUpperCase()}`;
 
-    const gIn = parseAmount(els.gross.value);
-    const tIn = parseAmount(els.tax.value);
-    const nIn = parseAmount(els.net.value);
+          saveState();
+        }
 
-    let gross, tax, net;
+        function useLastOnly() {
+          if (!lastEdited) {
+            showError("Click a field, type a value, then try again.");
+            return;
+          }
+          const keep = lastEdited;
+          ["gross", "tax", "net"].forEach((k) => { if (k !== keep) el(k).value = ""; });
+          clearError();
+          statusBadge.textContent = "OK";
+          calculate({ silent: true });
+        }
 
-    if (mode === 'gross'){
-      gross = gIn;
-      tax = gross * r;
-      net = gross - tax;
-    } else if (mode === 'tax'){
-      tax = tIn;
-      if (r === 0){
-        els.modePill.textContent = 'Tax mode';
-        setStatus('Rate is 0%, tax input cannot be used.', false);
-        return;
-      }
-      gross = tax / r;
-      net = gross - tax;
-    } else if (mode === 'net'){
-      net = nIn;
-      if (r === 1){
-        els.modePill.textContent = 'Net mode';
-        setStatus('Rate is 100%, net input cannot be used.', false);
-        return;
-      }
-      gross = net / (1 - r);
-      tax = gross - net;
-    }
+        function clearAll() {
+          gross.value = "";
+          tax.value = "";
+          net.value = "";
+          lastEdited = null;
+          clearError();
+          primaryOut.textContent = "—";
+          secondaryOut.textContent = "—";
+          bar.style.width = "0%";
+          statusBadge.textContent = "OK";
+          lastRun.textContent = `Live: ${nowLabel()}`;
+          saveState();
+        }
 
-    const eff = gross !== 0 ? tax / gross : NaN;
+        // ---- Copy / Share ----
+        async function copyResult() {
+          const text = [
+            `Net: ${primaryOut.textContent}`,
+            secondaryOut.textContent.replace(/\s+/g, " ").trim()
+          ].join("\n");
+          try {
+            await navigator.clipboard.writeText(text);
+            statusBadge.textContent = "Copied";
+            setTimeout(() => (statusBadge.textContent = "OK"), 900);
+          } catch (_) {
+            showError("Copy failed (clipboard blocked).");
+          }
+        }
 
-    els.rGross.textContent = fmtMoney(gross);
-    els.rTax.textContent = fmtMoney(tax);
-    els.rNet.textContent = fmtMoney(net);
-    els.rEff.textContent = Number.isFinite(eff) ? (eff*100).toFixed(2) + '%' : '—';
+        async function shareResult() {
+          const text = `VVPR-bis: Net ${primaryOut.textContent} — ${secondaryOut.textContent.replace(/\s+/g, " ").trim()}`;
+          try {
+            if (navigator.share) {
+              await navigator.share({ title: document.title, text, url: location.href });
+              statusBadge.textContent = "Shared";
+              setTimeout(() => (statusBadge.textContent = "OK"), 900);
+            } else {
+              await navigator.clipboard.writeText(text);
+              statusBadge.textContent = "Copied";
+              setTimeout(() => (statusBadge.textContent = "OK"), 900);
+            }
+          } catch (_) {
+            // user cancel is fine
+          }
+        }
 
-    if (mode !== 'gross') els.gross.value = Number.isFinite(gross) ? gross.toFixed(2) : '';
-    if (mode !== 'tax') els.tax.value = Number.isFinite(tax) ? tax.toFixed(2) : '';
-    if (mode !== 'net') els.net.value = Number.isFinite(net) ? net.toFixed(2) : '';
+        // ---- Events ----
+        function onEdit(id) {
+          lastEdited = id;
+          saveState();
+        }
 
-    els.modePill.textContent = mode.toUpperCase();
+        ["gross", "tax", "net"].forEach((id) => {
+          el(id).addEventListener("input", () => onEdit(id));
+          el(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calculate(); });
+        });
 
-    if (gross < 0 || tax < 0 || net < 0){
-      setStatus('Computed a negative value — check your input.', false);
-    } else {
-      setStatus(`Calculated from ${mode.toUpperCase()} at ${(r*100).toFixed(0)}%.`, true);
-    }
-  }
+        currency.addEventListener("change", () => {
+          updatePrefixes();
+          calculate({ silent: true });
+        });
 
-  function useLastOnly(){
-    if (!lastEdited){
-      els.modePill.textContent = 'Pick a field';
-      setStatus('Click a field, type a value, then try again.', false);
-      return;
-    }
-    const keep = lastEdited;
-    ['gross','tax','net'].forEach(k => { if (k !== keep) els[k].value = ''; });
-    els.modePill.textContent = `Using ${keep.toUpperCase()}`;
-    setStatus(`Keeping only ${keep.toUpperCase()}. Press Calculate.`, true);
-  }
+        calcBtn.addEventListener("click", () => calculate());
+        useLastBtn.addEventListener("click", useLastOnly);
+        resetBtn.addEventListener("click", clearAll);
+        copyBtn.addEventListener("click", copyResult);
+        shareBtn.addEventListener("click", shareResult);
 
-  function clearAll(){
-    els.gross.value = '';
-    els.tax.value = '';
-    els.net.value = '';
-    els.rGross.textContent = '—';
-    els.rTax.textContent = '—';
-    els.rNet.textContent = '—';
-    els.rEff.textContent = '—';
-    lastEdited = null;
-    els.modePill.textContent = 'Ready';
-    setStatus('Ready. Enter a value and hit Calculate.', true);
-  }
+        // segmented buttons
+        Array.from(document.querySelectorAll(".segBtn")).forEach((btn) => {
+          btn.addEventListener("click", () => {
+            rate.value = btn.getAttribute("data-rate");
+            setSegUIFromRate();
+            calculate({ silent: true });
+            saveState();
+          });
+        });
 
-  // ---- segmented control wiring ----
-  const segBtns = Array.from(document.querySelectorAll('.segBtn'));
-  function setRateFromButton(btn){
-    const rate = btn.getAttribute('data-rate');
-    els.rate.value = rate;
-
-    segBtns.forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
-    calculate();
-  }
-  segBtns.forEach(btn => btn.addEventListener('click', () => setRateFromButton(btn)));
-
-  // events
-  ['gross','tax','net'].forEach(k => {
-    els[k].addEventListener('input', () => { lastEdited = k; });
-    els[k].addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
-  });
-
-  els.currency.addEventListener('change', () => { updatePrefixes(); calculate(); });
-
-  els.calcBtn.addEventListener('click', calculate);
-  els.useLastBtn.addEventListener('click', useLastOnly);
-  els.clearBtn.addEventListener('click', clearAll);
-
-  // init
-  updatePrefixes();
-  calculate();
-})();
-</script>
-</body>
+        // ---- Init ----
+        loadState();
+        updatePrefixes();
+        setSegUIFromRate();
+        lastRun.textContent = `Live: ${nowLabel()}`;
+        calculate({ silent: true });
+      })();
+    </script>
+  </body>
 </html>
